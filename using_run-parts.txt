@@ -1,0 +1,20 @@
+The scripts are organized in folders based upon the user they must be
+run as and based upon areas which require human intervention.
+
+The scripts are intended to be runnable via the run-parts command,
+using the following form:
+
+  run-parts --exit-on-error --regex '^[0-9].*' <folder>
+
+For example, to install the prerequisites (which must be done as the
+root user), the following will work:
+
+  sudo run-parts --exit-on-error --regex '^[0-9].*' 0_prereqs
+
+And later, when necessary to run the 2_as_lfs folder as the lfs user,
+the following will work:
+
+  sudo -u lfs -i  # Allows full login, since we use a replacement shell
+                  # which breaks sudo...
+  cd /home/ubuntu
+  run-parts --exit-on-error --regex '^[0-9].*' 2_as_lfs

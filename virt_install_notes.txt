@@ -1,0 +1,122 @@
+Assuming that kvm and libvirt have never been used on your system
+previously, the following should set up the necessary environment::
+
+  # Install kvm, libvirt, and virt-install
+  sudo apt-get update
+  sudo apt-get install -y kvm libvirt-bin virtinst
+
+  # Enable the default network bridge (needed for SSH access)
+  sudo virsh net-autostart default
+  sudo virsh net-start default
+
+Disk images are stored in /var/lib/libvirt/images by default.  If this
+is not okay, then replace this folder with an appropriate symlink.
+(Alternatively, you probably can dump the XML of the disk pool, put in
+a different directory and then re-create the pool.)
+
+To create a VM compatible with the scripts in this repository, use
+virt-install with options similar to those which follow.  Update it as
+you like, but please note these requirements:
+
+  - The CD image is assumed to be Ubuntu 10.10 Desktop i386.  Other
+    host environments have not been tested.
+
+  - It is assumed that the VM has a single 20 GB disk, so it's
+    generally advised to leave the "--disk" flag as-is.
+
+  - I suggest using the "format=qcow2" option on the disk as specified
+    below.  This allows for the use of disk overlays which, although
+    an advanced virtualization feature, allows for a form of disk
+    snapshots which additional VMs can be based off of.  (Some people
+    may call these images "templates").
+
+The command is as follows::
+
+  sudo virt-install \
+    --name lfs1 \
+    --ram 4096 \
+    --disk pool=default,format=qcow2,size=20 \
+    --cdrom=/home/vultaire/ubuntu-10.10-desktop-i386.iso
+
+Wait for the VM viewer window to pop up, and select to "Try Ubuntu".
+Once the regular desktop appears, from the viewer window's menu,
+select "Send key", then "Ctrl + Alt + F1".  This will get to a
+console.
+
+If running on a non-US keyboard, it's helpful to load the appropriate
+keymap.  I don't know all codes, but for my keyboard, the following
+works::
+
+  sudo loadkeys jp
+
+The password for the ubuntu user should be changed, so::
+
+  sudo passwd ubuntu  # "sudo" will skip some password safety checks.
+  # Enter a password.  We'll use this later.
+
+Next, install SSH::
+
+  sudo apt-get install -y openssh-server
+
+Finally, let's set up DNS for this VM:
+
+  sudo hostname <vm_name>
+  sudo dhclient eth0  # Refreshes DNS
+
+From here, SSH access should work.  To get the IP address, you can use
+a line as follows:
+
+  # -From outside of the VM-
+  function vm_host () {
+      vm_name="$1"
+      host -t A "$vm_name" 192.168.122.1 \
+          | grep "^$vm_name has address" \
+          | awk '{print $4}'
+  }
+  vm_addr=$(vm_host "<vm_name>")  # vm_addr will receive the IP address.
+
+I assume you already have a working SSH key; if not, run ssh-keygen to
+create one.
+
+It's probably convenient to copy your key to the VM; this can be done
+with "ssh-copy-id ubuntu@<vm_ip>".
+
+Now, you are ready to create an LFS system via an SSH shell in a VM.
+You can close the VM's viewer window; the VM will still be running in
+the background.
+
+You're ready to begin, but a few VM control notes:
+
+1. VM commands should always be run via sudo. `1`_
+
+2. To save a VM's state to disk (stops the VM)::
+
+     sudo virsh save <vm_name> <path/to/target.file>
+
+3. To restore a VM from a saved state file (starts the VM
+   automatically)::
+
+     sudo virsh restore <path/to/target.file>
+
+4. To shutdown a VM gracefully::
+
+     sudo virsh shutdown <vm_name>
+
+   Note that the VM must have ACPI support installed.  The Ubuntu
+   10.10 environment does have acpid installed, so it should work
+   without modification.
+
+5. To destroy a VM completely::
+
+     sudo virsh destroy <vm_name>   # Terminates the VM (if running)
+     sudo virsh undefine <vm_name>  # Deletes the VM definition from libvirt.
+     sudo virsh vol-delete --pool default <disk_img_name_or_path> `2`_
+
+.. [1] Well, not really.  Of course, you should avoid using root or
+   sudo unless you need to.  However, libvirt controls virtual network
+   devices and disk pools, and these may not show up unless the root
+   account is used.  Sorry, but I don't yet know the appropriate group
+   permissions so that virsh and virt-install work in their entirety
+   without problems... so for now, "sudo" it is.
+
+.. [2] Usually, the disk image's name is "<vm_name>.img".

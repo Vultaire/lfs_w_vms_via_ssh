@@ -1,0 +1,4 @@
+There's a note about setting "MAKEFLAGS='-j 2" or using "make -j2".
+While I like this on my nice quad-core system, it does seem to cause
+intermittent compilation errors.  If you want the least headaches,
+although it takes time, I suggest *not* using this option.
