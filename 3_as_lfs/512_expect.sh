@@ -3,15 +3,12 @@
 # LFS Reference:
 # http://www.linuxfromscratch.org/lfs/view/stable/chapter05/expect.html
 
-set -o nounset
-set -o errexit
+source package_build.sh
+TARBALL=expect5.45.tar.gz
+SRC_DIR=expect5.45
+BUILD_DIR=
 
-source shared.sh
-match_user "lfs" || die 'This script must be run as the "lfs" user.'
-
-cd $LFS/sources
-tar -xf expect5.45.tar.gz
-cd expect5.45
+prep_build "lfs"
 
 cp -v configure{,.orig}
 sed 's:/usr/local/bin:/bin:' configure.orig > configure
@@ -22,6 +19,4 @@ make
 #make test
 make SCRIPTS="" install
 
-# Cleanup
-cd $LFS/sources
-rm -rf expect5.45
+cleanup_build

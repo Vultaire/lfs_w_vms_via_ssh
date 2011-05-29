@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Shared constants
+LFS=/mnt/lfs
+
 # Shared functions
 function die () {
     echo "$@" > /dev/stdout
@@ -14,6 +17,3 @@ function match_user () {
     user=$1
     [ "$(id -un)" == "$user" ]
 }
-
-# Shared constants
-LFS=/mnt/lfs

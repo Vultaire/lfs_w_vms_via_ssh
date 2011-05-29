@@ -3,15 +3,12 @@
 # LFS Reference:
 # http://www.linuxfromscratch.org/lfs/view/stable/chapter05/tcl.html
 
-set -o nounset
-set -o errexit
+source package_build.sh
+TARBALL=tcl8.5.9-src.tar.gz
+SRC_DIR=tcl8.5.9
+BUILD_DIR=
 
-source shared.sh
-match_user "lfs" || die 'This script must be run as the "lfs" user.'
-
-cd $LFS/sources
-tar -xf tcl8.5.9-src.tar.gz
-cd tcl8.5.9
+prep_build "lfs"
 
 cd unix
 ./configure --prefix=/tools
@@ -22,6 +19,4 @@ chmod -v u+w /tools/lib/libtcl8.5.so
 make install-private-headers
 ln -sv tclsh8.5 /tools/bin/tclsh
 
-# Cleanup
-cd $LFS/sources
-rm -rf tcl8.5.9
+cleanup_build

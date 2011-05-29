@@ -3,15 +3,12 @@
 # LFS Reference:
 # http://www.linuxfromscratch.org/lfs/view/stable/chapter05/glibc.html
 
-set -o nounset
-set -o errexit
+source package_build.sh
+TARBALL=glibc-2.13.tar.bz2
+SRC_DIR=glibc-2.13
+BUILD_DIR=glibc-build
 
-source shared.sh
-match_user "lfs" || die 'This script must be run as the "lfs" user.'
-
-cd $LFS/sources
-tar -xf glibc-2.13.tar.bz2
-cd glibc-2.13
+prep_build "lfs"
 
 patch -Np1 -i ../glibc-2.13-gcc_fix-1.patch
 
@@ -30,6 +27,4 @@ esac
 make
 make install
 
-# Cleanup
-cd $LFS/sources
-rm -rf glibc-2.13 glibc-build
+cleanup_build

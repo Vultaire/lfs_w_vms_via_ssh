@@ -3,21 +3,16 @@
 # LFS Reference:
 # http://www.linuxfromscratch.org/lfs/view/stable/chapter05/ncurses.html
 
-set -o nounset
-set -o errexit
+source package_build.sh
+TARBALL=ncurses-5.7.tar.gz
+SRC_DIR=ncurses-5.7
+BUILD_DIR=
 
-source shared.sh
-match_user "lfs" || die 'This script must be run as the "lfs" user.'
-
-cd $LFS/sources
-tar -xf ncurses-5.7.tar.gz
-cd ncurses-5.7
+prep_build "lfs"
 
 ./configure --prefix=/tools --with-shared \
     --without-debug --without-ada --enable-overwrite
 make
 make install
 
-# Cleanup
-cd $LFS/sources
-rm -rf ncurses-5.7
+cleanup_build

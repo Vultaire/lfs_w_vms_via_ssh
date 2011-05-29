@@ -3,15 +3,12 @@
 # LFS Reference:
 # http://www.linuxfromscratch.org/lfs/view/stable/chapter05/gcc-pass1.html
 
-set -o nounset
-set -o errexit
+source package_build.sh
+TARBALL=gcc-4.5.2.tar.bz2
+SRC_DIR=gcc-4.5.2
+BUILD_DIR=gcc-build
 
-source shared.sh
-match_user "lfs" || die 'This script must be run as the "lfs" user.'
-
-cd $LFS/sources
-tar -xf gcc-4.5.2.tar.bz2 
-cd gcc-4.5.2
+prep_build "lfs"
 
 tar -jxf ../mpfr-3.0.0.tar.bz2
 mv -v mpfr-3.0.0 mpfr
@@ -37,6 +34,4 @@ make install
 ln -vs libgcc.a `$LFS_TGT-gcc -print-libgcc-file-name | \
     sed 's/libgcc/&_eh/'`
 
-# Cleanup
-cd $LFS/sources
-rm -rf gcc-4.5.2 gcc-build
+cleanup_build
