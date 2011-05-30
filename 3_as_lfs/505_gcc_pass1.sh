@@ -1,0 +1,1 @@
+../steps/505_gcc_pass1.sh

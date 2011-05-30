@@ -1,0 +1,1 @@
+../steps/22_partition_setup.sh
