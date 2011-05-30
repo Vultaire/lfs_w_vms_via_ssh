@@ -11,7 +11,7 @@ source shared.sh
 forgive_nothing
 match_user_or_die "lfs"
 
-strip --strip-debug /tools/lib/*
-strip --strip-unneeded /tools/{,s}bin/*
+strip --strip-debug /tools/lib/* || true
+strip --strip-unneeded /tools/{,s}bin/* || true
 
 rm -rf /tools/{,share}/{info,man}

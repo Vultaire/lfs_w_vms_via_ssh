@@ -18,17 +18,17 @@ To create a VM compatible with the scripts in this repository, use
 virt-install with options similar to those which follow.  Update it as
 you like, but please note these requirements:
 
-  - The CD image is assumed to be Ubuntu 10.10 Desktop i386.  Other
-    host environments have not been tested.
+- The CD image is assumed to be Ubuntu 10.10 Desktop i386.  Other host
+  environments have not been tested.
 
-  - It is assumed that the VM has a single 20 GB disk, so it's
-    generally advised to leave the "--disk" flag as-is.
+- It is assumed that the VM has a single 20 GB disk, so it's generally
+  advised to leave the "--disk" flag as-is.
 
-  - I suggest using the "format=qcow2" option on the disk as specified
-    below.  This allows for the use of disk overlays which, although
-    an advanced virtualization feature, allows for a form of disk
-    snapshots which additional VMs can be based off of.  (Some people
-    may call these images "templates").
+- I suggest using the "format=qcow2" option on the disk as specified
+  below.  This allows for the use of disk overlays which, although an
+  advanced virtualization feature, allows for a form of disk snapshots
+  which additional VMs can be based off of.  (Some people may call
+  these images "templates").
 
 The command is as follows::
 
@@ -58,13 +58,13 @@ Next, install SSH::
 
   sudo apt-get install -y openssh-server
 
-Finally, let's set up DNS for this VM:
+Finally, let's set up DNS for this VM::
 
   sudo hostname <vm_name>
   sudo dhclient eth0  # Refreshes DNS
 
 From here, SSH access should work.  To get the IP address, you can use
-a line as follows:
+a line as follows::
 
   # -From outside of the VM-
   function vm_host () {
@@ -112,6 +112,14 @@ You're ready to begin, but a few VM control notes:
      sudo virsh undefine <vm_name>  # Deletes the VM definition from libvirt.
      sudo virsh vol-delete --pool default <disk_img_name_or_path> `2`_
 
+A final note: some versions of libvirt and kvm seem to have issues
+with save and restore.  On my host machine, intermittently this does
+not work: the commands run, but the resulting restored VM is
+unusable. `3`_ The simplest way to avoid this is to not stop until the
+VM is self-bootable.  Alternatively, the boot CD could be re-mounted
+and the needed prerequisites re-installed; if you go this route,
+you're on your own.
+
 .. [1] Well, not really.  Of course, you should avoid using root or
    sudo unless you need to.  However, libvirt controls virtual network
    devices and disk pools, and these may not show up unless the root
@@ -120,3 +128,6 @@ You're ready to begin, but a few VM control notes:
    without problems... so for now, "sudo" it is.
 
 .. [2] Usually, the disk image's name is "<vm_name>.img".
+
+.. [3] Debian Squeeze, libvirt0==0.8.3-5+squeeze1,
+   kvm==1:0.12.5+dfsg-5+squeeze2.
