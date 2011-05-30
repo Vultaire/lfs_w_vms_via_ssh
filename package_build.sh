@@ -14,17 +14,11 @@
 
 source shared.sh
 
-function forgive_nothing () {
-    set -o nounset
-    set -o errexit
-}
-
 function prep_build () {
     user="$1"
-    forgive_nothing
 
-    source shared.sh
-    match_user "$user" || die "This script must be run as the \"$user\" user."
+    forgive_nothing
+    match_user_or_die "$user"
 
     cd $LFS/sources
     tar -xf "$TARBALL"

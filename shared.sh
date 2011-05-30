@@ -17,3 +17,13 @@ function match_user () {
     user=$1
     [ "$(id -un)" == "$user" ]
 }
+
+function forgive_nothing () {
+    set -o nounset
+    set -o errexit
+}
+
+function match_user_or_die () {
+    user="$1"
+    match_user "$user" || die "This script must be run as the \"$user\" user."
+}
