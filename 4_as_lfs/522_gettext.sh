@@ -1,0 +1,1 @@
+../steps/522_gettext.sh

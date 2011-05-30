@@ -1,0 +1,1 @@
+../steps/524_gzip.sh

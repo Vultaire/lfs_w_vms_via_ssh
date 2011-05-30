@@ -1,0 +1,1 @@
+../steps/531_texinfo.sh

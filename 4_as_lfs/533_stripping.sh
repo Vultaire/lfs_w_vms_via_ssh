@@ -1,0 +1,1 @@
+../steps/533_stripping.sh
